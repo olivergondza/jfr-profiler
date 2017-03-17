@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+dir="$(dirname "$(readlink -f "$0")")"
+
+pid=$1
+name="recording-$(date '+%Y-%m-%d_%H-%M-%S').jfr"
+out="$(pwd)/${name}"
+name=$(sed "s/://" <<< "$name")
+settings="$dir/jfc/detailed"
+
+set -x
+
+jcmd $pid VM.unlock_commercial_features
+jcmd $pid JFR.start name="$name" settings="$settings" duration=5m filename="$out"
+
+set +x
+
+while [ "$(stat --format '%s' "$out" || true)" == "0" ]; do
+  sleep 10;
+done
+
+echo $out
