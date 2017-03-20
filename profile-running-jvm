@@ -1,8 +1,19 @@
 #!/usr/bin/env bash
 
+if [ "$#" -lt 1 ]; then
+    echo >&2 "Usage: $0 <pid> [<duration>]"
+    exit 1
+fi
+pid=$1
+
+if [ "$#" -lt 2 ]; then
+    duration="5m"
+else
+    duration="$2"
+fi
+
 dir="$(dirname "$(readlink -f "$0")")"
 
-pid=$1
 name="recording-$(date '+%Y-%m-%d_%H-%M-%S').jfr"
 out="$(pwd)/${name}"
 name=$(sed "s/://" <<< "$name")
@@ -11,7 +22,7 @@ settings="$dir/jfc/detailed"
 set -x
 
 jcmd $pid VM.unlock_commercial_features
-jcmd $pid JFR.start name="$name" settings="$settings" duration=5m filename="$out"
+jcmd $pid JFR.start name="$name" settings="$settings" duration="$duration" filename="$out"
 
 set +x
 
