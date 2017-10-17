@@ -1,0 +1,16 @@
+#!/bin/bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+if [ ! -z "$1" ]; then
+  profile="$1"
+else
+  profile="detailed"
+fi
+profile_path="${DIR}/jfc/${profile}"
+if [ ! -f "$profile_path" ]; then
+  echo >&2 "profile does not exist ${profile_path}"
+  exit 1
+fi
+
+echo -DargLine="-XX:+UnlockCommercialFeatures -XX:+FlightRecorder -XX:FlightRecorderOptions=samplethreads=true -XX:StartFlightRecording=dumponexit=true,filename=$(pwd)/surefire.jfr,settings=${profile_path}"
