@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+# https://github.com/olivergondza/bash-strict-mode
+set -euo pipefail
+trap 's=$?; echo >&2 "$0: Error on line "$LINENO": $BASH_COMMAND"; exit $s' ERR
 
 if [ "$#" -lt 1 ]; then
     echo >&2 "Usage: $0 <pid> [<duration>]"
@@ -21,8 +24,8 @@ settings="$dir/jfc/detailed"
 
 set -x
 
-jcmd $pid VM.unlock_commercial_features
-jcmd $pid JFR.start name="$name" settings="$settings" duration="$duration" filename="$out"
+jcmd "$pid" VM.unlock_commercial_features || true
+jcmd "$pid" JFR.start name="$name" settings="$settings" duration="$duration" filename="$out"
 
 set +x
 

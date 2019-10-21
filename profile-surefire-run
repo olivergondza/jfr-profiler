@@ -1,11 +1,14 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# https://github.com/olivergondza/bash-strict-mode
+set -euo pipefail
+trap 's=$?; echo >&2 "$0: Error on line "$LINENO": $BASH_COMMAND"; exit $s' ERR
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
-if [ ! -z "$1" ]; then
-  profile="$1"
-else
+if [ "$#" -eq 0 ]; then
   profile="detailed"
+else
+  profile="$1"
 fi
 profile_path="${DIR}/jfc/${profile}"
 if [ ! -f "$profile_path" ]; then
